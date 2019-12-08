@@ -3,18 +3,15 @@ package www.nazgul;
 public class Transfert {
 
 	public static void main(String args[]) {
+		test(TestData.TEST_DATA_METAL);
+		test(TestData.TEST_DATA_CRISTAL);
+		test(TestData.TEST_DATA_DEUTERIUM);
+	}
 
-		double volumeObjectif = 3000000.0;
-		final int nbSources = 6;
-		Source[] source = new Source[nbSources];
-		source[0] = new Source(516000.0, 40300.0, 30.0 / 60.0);
-		source[1] = new Source(438000.0, 38800.0, 40.0 / 60.0);
-		source[2] = new Source(84000.0, 38000.0, 0.0 / 60.0);
-		source[3] = new Source(369000.0, 40300.0, 50.0 / 60.0);
-		source[4] = new Source(300000.0, 31200.0, 60.0 / 60.0);
-		source[5] = new Source(739000.0, 40300.0, 70.0 / 60.0);
-
-		int nbConfigurations = (1 << nbSources);
+	private static void test(TestData testData) {
+		System.out.println(testData.nom);
+		System.out.println("Volume objectif = " + testData.volumeObjectif);
+		int nbConfigurations = (1 << testData.source.length);
 		// La configuration = la liste des sources qui contribuent.
 		// Il y a nbConfigurations = 2 ^ nbSources possibilités de configuration.
 		// Les configurations sont numérotées de 0 à 2^nbSources - 1, comme suit :
@@ -26,13 +23,9 @@ public class Transfert {
 		// - configuration 010101: les sources 0, 2, 4 contribuent, mais pas les sources 1, 3, 5
 		//   ...
 		// - configuration 111111: toutes les sources contribuent
-
 		for (int configuration = 1; configuration < nbConfigurations; configuration ++) {
-			traiterConfiguration(configuration, source, volumeObjectif);
+			traiterConfiguration(configuration, testData.source, testData.volumeObjectif);
 		}
-		/*
-		traiterConfiguration(0x3F, source, volumeObjectif);
-		 */
 	}
 
 	private static void traiterConfiguration(int configuration, Source[] source, double volumeObjectif) {
@@ -49,13 +42,14 @@ public class Transfert {
 					- volumeBonusTotal(configuration, source, dtMax)) / (debitTotal(configuration, source));
 		}
 		t = dtMax + dtAttente;
-		System.out.println(String.format("config %s: dtMax=%f, vMin=%f, dtAttente=%f, t=%f, vérification=%f, %s",
+		double volumeAtteint = volumeTransfereTotal(configuration, source, dtMax, dtAttente);
+		System.out.println(String.format("config %s: dtMax=%f, vMin=%f, dtAttente=%f, t=%f, volumeAtteint=%f, %s",
 				Integer.toBinaryString(configuration),
 				dtMax,
 				vMin,
 				dtAttente,
 				t,
-				volumeTransfereTotal(configuration, source, dtMax, dtAttente),
+				volumeAtteint,
 				listeInstantsTransfert(configuration, source, dtMax, dtAttente)
 		));
 	}
