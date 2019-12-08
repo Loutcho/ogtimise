@@ -37,14 +37,20 @@ public class OgameOptimizer
 		/* simuler(e0, d) permet de calculer la meilleure séquence sur une durée de jeu d fixée (en heures) */
 		// simuler(e0, 6.15);
 
-		Etat e0 = new Etat(0.0, 18, 15, 0.0, 0.0, "");
-		simuler(e0, 1000);
+		Etat e0 = new Etat(0.0, 24, 21, 0, 0, "");
+		simuler(e0, 10000);
 
 		Set scores = solutions.keySet();
+		boolean worstScoreSet = false;
+		double worstScore = 0.0;
 		for (Object o : scores) {
 			Double score = (Double) (o);
+			if (! worstScoreSet) {
+				worstScore = score;
+				worstScoreSet = true;
+			}
 			String sequence = (String) (solutions.get(score));
-			System.out.println(sequence + " ==> " + score);
+			System.out.println(String.format("%s ==> +%.0fk", sequence, (score - worstScore) / 1000.0));
 		}
 	}
 	
